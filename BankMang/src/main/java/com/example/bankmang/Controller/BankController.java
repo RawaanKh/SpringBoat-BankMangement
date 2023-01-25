@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping("api/v1/customer")
 public class BankController {
     ArrayList<Customers> customers=new ArrayList<>();
     @GetMapping("/get")
@@ -23,24 +24,27 @@ public class BankController {
         return "Updated!";
     }
     @PutMapping("/withdraw/{index}")
-    public int Withdraw(@PathVariable int index,@RequestBody Customers customer){
-        int UpdatedBalance;
-        int withdraw=1500;
-        if (customer.getBalance()<=withdraw)
-            System.out.println("Rejected! NOT ENOUGH AMMOUNT OF MONEY ");
+    public int Withdraw(@PathVariable int index,@PathVariable int withdraw, @RequestBody Customers customer){
+       int UpdatedBalance;
+        if (customer.getBalance()<withdraw){
+           System.out.println("Rejected! NOT ENOUGH AMMOUNT OF MONEY ");
+            return balance;
+                            }
+        else
         UpdatedBalance=customer.getBalance()-withdraw;
         customer.setBalance(UpdatedBalance);
         customers.set(index,customer);
         return UpdatedBalance;
     }
-    @PutMapping("/deposit/{index}")
-    public int Deposit(@PathVariable int index,@RequestBody Customers customer){
-        int addMoney=1000;
-        addMoney+=customer.getBalance();
-        customer.setBalance(addMoney);
-        customers.set(index,customer);
-        return addMoney;
-    }
+    @PutMapping("/deposit/{id}/{amount}")
+    public String Deposit(@PathVariable int id,@PathVariable int amount) {
+        for (Customer c : customers) {
+            if (c.getId()==id)
+                c.setBalance(c.getBalance() + amount);
+            return "Money Added!";
+        }
+                return "Enter correct ID";
+        }
     @GetMapping("/remove/{index}")
     public String Remove(@PathVariable int index){
         customers.remove(index);
